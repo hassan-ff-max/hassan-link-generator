@@ -1,353 +1,439 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HASSAN WA CHAT LINK GENERATOR</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050811;
+            background-color: #0b0f19;
             color: #ffffff;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
-        /* Continuous Rotating Animation for Profile Images */
-        /* You can adjust speed here or change 12s to faster/slower (e.g. 6s for fast, 20s for slow) */
-        @keyframes rotateCircle {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+        /* Popup Overlay */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
         }
 
-        .slow-rotate {
-            animation: rotateCircle 12s linear infinite;
+        .popup-box {
+            background: #111827;
+            border: 2px solid #00d2ff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 380px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.4);
+            animation: fadeIn 0.3s ease-in-out;
         }
 
-        /* Glowing Border effect matching screenshots */
-        .neon-card {
-            background: rgba(11, 15, 29, 0.95);
-            border: 2px solid rgba(0, 162, 255, 0.4);
-            box-shadow: 0 0 25px rgba(0, 162, 255, 0.15), inset 0 0 15px rgba(0, 162, 255, 0.05);
-            border-radius: 24px;
+        /* Rotating Image Animation */
+        .rotating-img-container {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 15px auto;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(45deg, #00d2ff, #ff007f, #00d2ff);
+            animation: rotateLogo 4s linear infinite; /* Speed: 1x rotation */
         }
 
-        .modal-card {
-            background: #090e1d;
-            border: 2px solid #00bcff;
-            box-shadow: 0 0 35px rgba(0, 188, 255, 0.3);
-            border-radius: 28px;
+        .rotating-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            background: #000;
         }
 
-        /* Neon Text Gradient */
-        .gradient-title {
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 50%, #ff5252 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        @keyframes rotateLogo {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .gradient-btn {
-            background: linear-gradient(90deg, #0082fb 0%, #d800ff 100%);
-            transition: all 0.3s ease;
+        .popup-box h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
         }
 
-        .gradient-btn:hover {
-            opacity: 0.92;
-            box-shadow: 0 0 20px rgba(216, 0, 255, 0.4);
+        .popup-box h2 span:nth-child(1) { color: #00d2ff; }
+        .popup-box h2 span:nth-child(2) { color: #ffffff; }
+        .popup-box h2 span:nth-child(3) { color: #ff007f; }
+
+        .popup-box p {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+            line-height: 1.4;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .channel-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #0052D4, #4364F7, #6FB1FC);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(67, 100, 247, 0.4);
+            transition: 0.2s;
         }
-        ::-webkit-scrollbar-track {
-            background: #050811;
+
+        .channel-btn:active {
+            transform: scale(0.98);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #1e293b;
-            border-radius: 4px;
+
+        .close-popup-btn {
+            background: transparent;
+            border: 1px solid #374151;
+            color: #9ca3af;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .close-popup-btn:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* Main Container */
+        .main-container {
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            margin-top: 10px;
+            display: none; /* Shown after popup close */
+        }
+
+        .main-logo-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px auto;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(45deg, #00d2ff, #ff007f, #00d2ff);
+            animation: rotateLogo 4s linear infinite;
+        }
+
+        .main-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .main-container h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .main-container h1 span:nth-child(1) { color: #00d2ff; }
+        .main-container h1 span:nth-child(2) { color: #ffffff; }
+        .main-container h1 span:nth-child(3) { color: #ff007f; }
+
+        .subtitle {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .badge {
+            display: inline-block;
+            border: 1px solid #1f2937;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #d1d5db;
+            background: #111827;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: #f3f4f6;
+        }
+
+        .card p {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: #e5e7eb;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #030712;
+            border: 1px solid #374151;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #00d2ff;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(90deg, #0052D4, #4364F7, #ff007f);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            transition: 0.2s;
+        }
+
+        .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .result-box {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .result-input {
+            background: #030712;
+            color: #10b981;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .action-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-open {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+
+        .btn-clear {
+            background: #1f2937;
+            color: #d1d5db;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .footer-features {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .feature-box {
+            background: #111827;
+            border: 1px solid #1f2937;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .footer-credit {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-credit span {
+            color: #ff007f;
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-between p-4 sm:p-6 min-h-screen relative overflow-x-hidden">
+<body>
 
-    <!-- Config section comments for editing:
-      IMAGE EDIT INSTRUCTION:
-      To change the logo image, update the IMAGE_URL variable in the JavaScript section at the bottom of this file.
-    -->
-
-    <!-- POPUP MODAL ON LOAD -->
-    <div id="welcomeModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 transition-opacity duration-300 opacity-100">
-        <div class="modal-card w-full max-w-md p-6 sm:p-8 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
-            
-            <!-- Rotating Image Container -->
-            <div class="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center">
-                <div class="absolute inset-0 rounded-full border-2 border-cyan-400 blur-sm"></div>
-                <img id="modalProfileImg" src="https://i.ibb.co/21qmyHBJ/jawadmd.jpg" alt="HASSAN Profile" class="w-full h-full object-cover rounded-full slow-rotate shadow-2xl border-2 border-cyan-400">
+    <!-- POPUP MODAL -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-box">
+            <!-- Image link changeable here -->
+            <div class="rotating-img-container">
+                <img src="https://i.ibb.co/21qmyHBJ/jawadmd.jpg" alt="Logo">
             </div>
-
-            <!-- Modal Title & Channel Info -->
-            <div class="space-y-2">
-                <h2 class="text-2xl sm:text-3xl font-black tracking-wide text-white">
-                    <span class="text-cyan-400">HASSAN</span> <span class="text-white">DEVELOPER</span> <span class="text-pink-500">UPDATES</span>
-                </h2>
-                <p class="text-slate-300 text-sm sm:text-base font-medium">
-                    Follow This channel For More methods And Tools
-                </p>
-            </div>
-
-            <!-- Modal Action Buttons -->
-            <div class="w-full space-y-3 pt-2">
-                <a href="https://whatsapp.com/channel/0029VbDuHz8JJhzb8zf92C1H" target="_blank" rel="noopener noreferrer" class="block w-full py-3.5 px-4 rounded-xl text-white font-bold text-base sm:text-lg gradient-btn text-center shadow-lg uppercase tracking-wider">
-                    OFFICIAL WHATSAPP CHANNEL
-                </a>
-                
-                <button onclick="closeModal()" class="w-full py-3 px-4 rounded-full border border-slate-600 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-semibold text-sm transition-all flex items-center justify-center gap-2">
-                    Continue to Website ✕
-                </button>
-            </div>
+            <h2><span>HASSAN</span> <span>TECH</span> <span>ZONE</span></h2>
+            <p>Follow This channel For More methods And Tools</p>
+            <a href="https://whatsapp.com/channel/0029VbDuHz8JJhzb8zf92C1H" target="_blank" class="channel-btn">OFFICIAL WHATSAPP CHANNEL</a>
+            <button class="close-popup-btn" onclick="closePopup()">Continue to Website ✕</button>
         </div>
     </div>
 
-    <!-- MAIN WEBSITE CONTENT CONTAINER -->
-    <main class="w-full max-w-xl flex flex-col items-center space-y-6 my-auto pt-4 pb-8">
-
-        <!-- HEADER SECTION WITH ROTATING IMAGE -->
-        <header class="flex flex-col items-center text-center space-y-4">
-            <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center">
-                <div class="absolute inset-0 rounded-full border-2 border-cyan-400 blur-md opacity-60"></div>
-                <img id="mainProfileImg" src="https://i.ibb.co/21qmyHBJ/jawadmd.jpg" alt="HASSAN Logo" class="w-full h-full object-cover rounded-full slow-rotate border-2 border-cyan-400 shadow-xl">
-            </div>
-
-            <div class="space-y-2 px-2">
-                <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight gradient-title leading-tight">
-                    HASSAN WA CHAT LINK GENERATOR
-                </h1>
-                <p class="text-slate-300 text-sm sm:text-base max-w-md mx-auto font-normal">
-                    Create a direct Whatsapp chat link in seconds by using only HASSAN WA CHAT LINK GENERATOR
-                </p>
-            </div>
-
-            <!-- VIP Badge -->
-            <div class="inline-flex items-center gap-2 border border-cyan-500/40 bg-cyan-950/30 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider text-cyan-300 uppercase shadow-inner">
-                ✦ VIP EDITION · FREE TO USE ✦
-            </div>
-        </header>
-
-        <!-- MAIN GENERATOR CARD -->
-        <section class="neon-card w-full p-5 sm:p-7 space-y-6">
-            
-            <!-- Section Header -->
-            <div class="space-y-1">
-                <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white">
-                    <span class="text-yellow-400">⚡</span> Generate Your Direct Link
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                    Enter the phone number with its country code. Do not add a plus sign, spaces, or dashes. A message is optional.
-                </p>
-            </div>
-
-            <!-- Form Inputs -->
-            <div class="space-y-4">
-                <!-- Phone Input -->
-                <div class="space-y-1.5">
-                    <label for="phoneNumber" class="block text-sm font-bold text-slate-200">
-                        Phone Number (with country code)
-                    </label>
-                    <input type="tel" id="phoneNumber" placeholder="e.g. 923001234567" class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-sm sm:text-base font-mono transition-all">
-                </div>
-
-                <!-- Prefilled Message Input -->
-                <div class="space-y-1.5">
-                    <label for="message" class="block text-sm font-bold text-slate-200">
-                        Pre-filled Message (optional)
-                    </label>
-                    <textarea id="message" rows="3" placeholder="e.g. Hello! I want to contact you..." class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-sm sm:text-base transition-all resize-none"></textarea>
-                </div>
-
-                <!-- Generate Button -->
-                <button onclick="generateLink()" class="w-full py-3.5 px-4 rounded-xl text-white font-extrabold text-base sm:text-lg gradient-btn shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                    <span>🔗 Generate WhatsApp Link »</span>
-                </button>
-            </div>
-
-            <!-- OUTPUT SECTION -->
-            <div class="pt-4 border-t border-slate-800/80 space-y-4">
-                <div class="space-y-1.5">
-                    <label class="block text-sm font-bold text-slate-200">
-                        ↗ Your Direct Link
-                    </label>
-                    <input type="text" id="outputLink" readonly placeholder="Your WhatsApp link will appear here..." class="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-cyan-400 placeholder-slate-600 focus:outline-none text-xs sm:text-sm font-mono truncate">
-                </div>
-
-                <!-- Output Actions -->
-                <div class="space-y-2.5">
-                    <button onclick="copyToClipboard()" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 shadow-md">
-                        <span id="copyBtnIcon">📋</span> <span id="copyBtnText">Copy</span>
-                    </button>
-
-                    <button onclick="openWhatsApp()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 shadow-md">
-                        <span>☎ Open in WhatsApp</span>
-                    </button>
-
-                    <button onclick="clearForm()" class="w-full py-3 px-4 bg-slate-800/90 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-sm transition-colors flex items-center justify-center">
-                        Clear Form
-                    </button>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- FEATURES / BENEFIT BADGES -->
-        <section class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="p-4 bg-slate-900/70 border border-slate-800/80 rounded-xl text-center space-y-1">
-                <div class="text-yellow-400 font-bold text-base">⚡ Instant</div>
-                <div class="text-xs text-slate-400">Link generation</div>
-            </div>
-            <div class="p-4 bg-slate-900/70 border border-slate-800/80 rounded-xl text-center space-y-1">
-                <div class="text-yellow-400 font-bold text-base">🔒 Private</div>
-                <div class="text-xs text-slate-400">Generated in your browser</div>
-            </div>
-            <div class="p-4 bg-slate-900/70 border border-slate-800/80 rounded-xl text-center space-y-1">
-                <div class="text-yellow-400 font-bold text-base">📱 Mobile VIP</div>
-                <div class="text-xs text-slate-400">Phone and desktop friendly</div>
-            </div>
-        </section>
-
-        <!-- ALERT NOTIFICATION BANNER -->
-        <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-cyan-500 text-black px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm shadow-2xl opacity-0 transition-all pointer-events-none duration-300 z-50">
-            Link copied to clipboard!
+    <!-- MAIN INTERFACE -->
+    <div class="main-container" id="mainContainer">
+        <!-- Image link changeable here -->
+        <div class="main-logo-container">
+            <img src="https://i.ibb.co/21qmyHBJ/jawadmd.jpg" alt="Logo">
         </div>
 
-    </main>
+        <h1><span>HASSAN</span> <span>WA</span> <span>CHAT LINK</span> <span>GENERATOR</span></h1>
+        <p class="subtitle">Create a direct Whatsapp chat link in seconds by using only HASSAN WA CHAT LINK GENERATOR</p>
+        
+        <div class="badge">⚡ VIP EDITION · FREE TO USE</div>
 
-    <!-- FOOTER SECTION -->
-    <footer class="w-full text-center py-6 border-t border-slate-900/80 mt-6 space-y-1">
-        <p class="text-xs font-bold tracking-widest text-pink-500 uppercase">
-            DEVELOP BY HASSAN DEVELOPER
-        </p>
-        <p class="text-xs font-semibold tracking-wider text-slate-400">
-            SOURCE CODE HUB
-        </p>
-        <p class="text-[11px] text-slate-500">
+        <div class="card">
+            <h3>⚡ Generate Your Direct Link</h3>
+            <p>Enter the phone number with its country code. Do not add a plus sign, spaces, or dashes. A message is optional.</p>
+
+            <label>Phone Number (with country code)</label>
+            <input type="text" id="phoneNumber" placeholder="e.g. 923001234567">
+
+            <label>Pre-filled Message (optional)</label>
+            <textarea id="messageText" placeholder="e.g. Hello! I want to contact you..."></textarea>
+
+            <button class="generate-btn" onclick="generateLink()">🔗 Generate WhatsApp Link »</button>
+
+            <!-- RESULT BOX -->
+            <div class="result-box" id="resultBox">
+                <label style="margin-top: 15px;">↗ Your Direct Link</label>
+                <input type="text" id="generatedLinkOutput" class="result-input" readonly>
+                
+                <div class="action-btns">
+                    <button class="btn-copy" onclick="copyLink()">📋 Copy</button>
+                    <a id="openLinkBtn" href="#" target="_blank" class="btn-open">💬 Open in WhatsApp</a>
+                    <button class="btn-clear" onclick="clearForm()">Clear Form</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-features">
+            <div class="feature-box">⚡ Instant Link generation</div>
+            <div class="feature-box">🔒 Private - Generated in your browser</div>
+            <div class="feature-box">📱 Mobile VIP - Phone and desktop friendly</div>
+        </div>
+
+        <div class="footer-credit">
+            DEVELOP BY <span>HASSANHACKER</span><br>
+            SOURCE CODE HUB<br>
             Use responsibly · No data is sent to this website.
-        </p>
-    </footer>
+        </div>
+    </div>
 
-    <!-- LOGIC & SCRIPTS -->
     <script>
-        /* 
-           ===================================================================
-           EASY CONFIGURATION: YOU CAN CHANGE YOUR PICTURE URL HERE ANY TIME!
-           ===================================================================
-        */
-        const PROFILE_PICTURE_URL = "https://i.ibb.co/21qmyHBJ/jawadmd.jpg";
-
-        // Apply Image URLs dynamically on load
-        document.addEventListener("DOMContentLoaded", () => {
-            const modalImg = document.getElementById("modalProfileImg");
-            const mainImg = document.getElementById("mainProfileImg");
-            
-            if (modalImg) modalImg.src = PROFILE_PICTURE_URL;
-            if (mainImg) mainImg.src = PROFILE_PICTURE_URL;
-        });
-
-        // Close Welcome Modal
-        function closeModal() {
-            const modal = document.getElementById('welcomeModal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
+        function closePopup() {
+            document.getElementById('popupOverlay').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
         }
 
-        // Generate WhatsApp Direct Link
         function generateLink() {
-            const phoneInput = document.getElementById('phoneNumber').value.trim();
-            const messageInput = document.getElementById('message').value.trim();
-            const outputInput = document.getElementById('outputLink');
+            const phone = document.getElementById('phoneNumber').value.trim();
+            const message = document.getElementById('messageText').value.trim();
 
-            // Sanitize phone number (remove +, spaces, hyphens)
-            const cleanedPhone = phoneInput.replace(/[^0-9]/g, '');
-
-            if (!cleanedPhone) {
-                showToast("Please enter a valid phone number with country code!");
+            if (!phone) {
+                alert('Please enter a valid phone number with country code!');
                 return;
             }
 
-            let waUrl = `https://wa.me/${cleanedPhone}`;
-            if (messageInput) {
-                const encodedMsg = encodeURIComponent(messageInput);
-                waUrl += `?text=${encodedMsg}`;
+            let finalUrl = `https://wa.me/${phone}`;
+            if (message) {
+                finalUrl += `?text=${encodeURIComponent(message)}`;
             }
 
-            outputInput.value = waUrl;
-            showToast("WhatsApp link generated successfully!");
+            document.getElementById('generatedLinkOutput').value = finalUrl;
+            document.getElementById('openLinkBtn').href = finalUrl;
+            document.getElementById('resultBox').style.display = 'block';
         }
 
-        // Copy generated link to clipboard
-        function copyToClipboard() {
-            const outputInput = document.getElementById('outputLink');
-            if (!outputInput.value) {
-                showToast("Please generate a link first!");
-                return;
-            }
-
-            // Copy execution
-            outputInput.select();
-            document.execCommand('copy');
-
-            // Update UI feedback
-            const copyBtnText = document.getElementById('copyBtnText');
-            const copyBtnIcon = document.getElementById('copyBtnIcon');
-
-            copyBtnText.textContent = "Copied!";
-            copyBtnIcon.textContent = "✓";
-            showToast("Copied to clipboard!");
-
-            setTimeout(() => {
-                copyBtnText.textContent = "Copy";
-                copyBtnIcon.textContent = "📋";
-            }, 2000);
+        function copyLink() {
+            const copyText = document.getElementById('generatedLinkOutput');
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            alert('Link Copied to Clipboard!');
         }
 
-        // Open WhatsApp directly in new tab
-        function openWhatsApp() {
-            const outputInput = document.getElementById('outputLink').value;
-            if (!outputInput) {
-                showToast("Please generate a link first!");
-                return;
-            }
-            window.open(outputInput, '_blank');
-        }
-
-        // Clear all fields
         function clearForm() {
             document.getElementById('phoneNumber').value = '';
-            document.getElementById('message').value = '';
-            document.getElementById('outputLink').value = '';
-            showToast("Form cleared!");
-        }
-
-        // Toast Notification Helper
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
-            }, 2500);
+            document.getElementById('messageText').value = '';
+            document.getElementById('resultBox').style.display = 'none';
         }
     </script>
 </body>
